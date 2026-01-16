@@ -1,0 +1,171 @@
+{
+  "log": {
+    "level": "info"
+  },
+
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns_local",
+        "type": "udp",
+        "server": "223.5.5.5"
+      },
+      {
+        "tag": "dns_fakeip",
+        "type": "fakeip",
+        "inet4_range": "198.18.0.0/15",
+        "inet6_range": "fc00::/18"
+      },
+      {
+        "tag": "dns_proxy",
+        "type": "https",
+        "server": "8.8.8.8",
+        "detour": "PROXY"
+      }
+    ],
+    "rules": [
+      { "rule_set": "geosite-cn", "server": "dns_local" },
+      { "query_type": ["A", "AAAA"], "server": "dns_fakeip" }
+    ],
+    "final": "dns_proxy",
+    "strategy": "prefer_ipv4",
+    "reverse_mapping": true,
+    "independent_cache": true
+  },
+
+  "outbound_providers": [
+    {
+      "tag": "HXVIP",
+      "type": "http",
+      "url": "https://106.55.228.246:36666/hxvip?token=386d927298980492fd0f9a0abc87ed56",
+      "interval": "6h",
+      "path": "./providers/hxvip.json",
+      "healthcheck": {
+        "enable": true,
+        "url": "https://www.gstatic.com/generate_204",
+        "interval": "5m"
+      }
+    }
+  ],
+
+  "outbounds": [
+    {
+      "tag": "HK_AUTO",
+      "type": "urltest",
+      "use": ["HXVIP"],
+      "filter": "(?i)港|hk|hongkong",
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m"
+    },
+    {
+      "tag": "JP_AUTO",
+      "type": "urltest",
+      "use": ["HXVIP"],
+      "filter": "(?i)日|jp|japan",
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m"
+    },
+    {
+      "tag": "SG_AUTO",
+      "type": "urltest",
+      "use": ["HXVIP"],
+      "filter": "(?i)新|sg|singapore",
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m"
+    },
+    {
+      "tag": "US_AUTO",
+      "type": "urltest",
+      "use": ["HXVIP"],
+      "filter": "(?i)美|us|united",
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m"
+    },
+    {
+      "tag": "PROXY",
+      "type": "selector",
+      "outbounds": [
+        "HK_AUTO",
+        "JP_AUTO",
+        "SG_AUTO",
+        "US_AUTO"
+      ]
+    },
+    {
+      "tag": "GLOBAL_AUTO",
+      "type": "urltest",
+      "outbounds": [
+        "HK_AUTO",
+        "JP_AUTO",
+        "SG_AUTO",
+        "US_AUTO"
+      ]
+    },
+    {
+      "tag": "DIRECT",
+      "type": "direct"
+    }
+  ],
+
+  "route": {
+    "rules": [
+      { "ip_is_private": true, "outbound": "DIRECT" },
+
+      { "rule_set": "geosite-cn", "outbound": "DIRECT" },
+      { "rule_set": "geoip-cn", "outbound": "DIRECT" },
+
+      { "rule_set": "geosite-google", "outbound": "PROXY" },
+      { "rule_set": "geosite-youtube", "outbound": "PROXY" },
+      { "rule_set": "geosite-telegram", "outbound": "PROXY" },
+      { "rule_set": "geosite-netflix", "outbound": "PROXY" },
+
+      { "final": "PROXY" }
+    ],
+    "rule_set": [
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/cn.srs"
+      },
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip-cn.srs"
+      },
+      {
+        "tag": "geosite-google",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/google.srs"
+      },
+      {
+        "tag": "geosite-youtube",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/youtube.srs"
+      },
+      {
+        "tag": "geosite-telegram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/telegram.srs"
+      },
+      {
+        "tag": "geosite-netflix",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/netflix.srs"
+      }
+    ]
+  },
+
+  "inbounds": [
+    {
+      "type": "mixed",
+      "listen": "::",
+      "listen_port": 7890
+    }
+  ]
+}
