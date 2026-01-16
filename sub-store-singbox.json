@@ -3,6 +3,19 @@
     "level": "info"
   },
 
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "singbox0",
+      "inet4_address": "172.19.0.1/30",
+      "stack": "system",
+      "auto_route": true,
+      "strict_route": false,
+      "sniff": true
+    }
+  ],
+
   "dns": {
     "servers": [
       {
@@ -17,7 +30,7 @@
         "inet6_range": "fc00::/18"
       },
       {
-        "tag": "dns_proxy",
+        "tag": "dns_remote",
         "type": "https",
         "server": "8.8.8.8"
       }
@@ -26,61 +39,49 @@
       { "rule_set": "geosite-cn", "server": "dns_local" },
       { "query_type": ["A", "AAAA"], "server": "dns_fakeip" }
     ],
-    "final": "dns_proxy",
+    "final": "dns_remote",
     "strategy": "prefer_ipv4",
     "reverse_mapping": true
   },
 
   "outbounds": [
     {
-      "tag": "HK_AUTO",
+      "tag": "HK",
       "type": "urltest",
       "filter": "(?i)港|hk|hongkong"
     },
     {
-      "tag": "JP_AUTO",
+      "tag": "JP",
       "type": "urltest",
       "filter": "(?i)日|jp|japan"
     },
     {
-      "tag": "SG_AUTO",
+      "tag": "SG",
       "type": "urltest",
       "filter": "(?i)新|sg|singapore"
     },
     {
-      "tag": "US_AUTO",
+      "tag": "US",
       "type": "urltest",
       "filter": "(?i)美|us|united"
     },
+
     {
       "tag": "PROXY",
       "type": "selector",
       "outbounds": [
-        "HK_AUTO",
-        "JP_AUTO",
-        "SG_AUTO",
-        "US_AUTO"
+        "HK",
+        "JP",
+        "SG",
+        "US"
       ]
     },
+
     {
       "tag": "DIRECT",
       "type": "direct"
     }
   ],
-{
-  "inbounds": [
-    {
-      "type": "tun",
-      "tag": "tun-in",
-      "interface_name": "singbox0",
-      "inet4_address": "172.19.0.1/30",
-      "stack": "system",
-      "auto_route": true,
-      "strict_route": false,
-      "sniff": true
-    }
-  ]
-}
 
   "route": {
     "rules": [
@@ -89,13 +90,18 @@
       { "rule_set": "geosite-cn", "outbound": "DIRECT" },
       { "rule_set": "geoip-cn", "outbound": "DIRECT" },
 
+      { "rule_set": "geosite-apple", "outbound": "DIRECT" },
+      { "rule_set": "geosite-microsoft", "outbound": "DIRECT" },
+
       { "rule_set": "geosite-google", "outbound": "PROXY" },
       { "rule_set": "geosite-youtube", "outbound": "PROXY" },
       { "rule_set": "geosite-telegram", "outbound": "PROXY" },
+      { "rule_set": "geosite-twitter", "outbound": "PROXY" },
       { "rule_set": "geosite-netflix", "outbound": "PROXY" },
 
       { "final": "PROXY" }
     ],
+
     "rule_set": [
       {
         "tag": "geosite-cn",
@@ -108,6 +114,18 @@
         "type": "remote",
         "format": "binary",
         "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip-cn.srs"
+      },
+      {
+        "tag": "geosite-apple",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/apple.srs"
+      },
+      {
+        "tag": "geosite-microsoft",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.srs"
       },
       {
         "tag": "geosite-google",
@@ -128,6 +146,12 @@
         "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/telegram.srs"
       },
       {
+        "tag": "geosite-twitter",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/twitter.srs"
+      },
+      {
         "tag": "geosite-netflix",
         "type": "remote",
         "format": "binary",
@@ -136,4 +160,3 @@
     ]
   }
 }
-
