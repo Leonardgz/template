@@ -19,8 +19,7 @@
       {
         "tag": "dns_proxy",
         "type": "https",
-        "server": "8.8.8.8",
-        "detour": "PROXY"
+        "server": "8.8.8.8"
       }
     ],
     "rules": [
@@ -29,71 +28,33 @@
     ],
     "final": "dns_proxy",
     "strategy": "prefer_ipv4",
-    "reverse_mapping": true,
-    "independent_cache": true
+    "reverse_mapping": true
   },
-
-  "outbound_providers": [
-    {
-      "tag": "HXVIP",
-      "type": "http",
-      "url": "https://106.55.228.246:36666/hxvip?token=386d927298980492fd0f9a0abc87ed56",
-      "interval": "6h",
-      "path": "./providers/hxvip.json",
-      "healthcheck": {
-        "enable": true,
-        "url": "https://www.gstatic.com/generate_204",
-        "interval": "5m"
-      }
-    }
-  ],
 
   "outbounds": [
     {
       "tag": "HK_AUTO",
       "type": "urltest",
-      "use": ["HXVIP"],
-      "filter": "(?i)港|hk|hongkong",
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "3m"
+      "filter": "(?i)港|hk|hongkong"
     },
     {
       "tag": "JP_AUTO",
       "type": "urltest",
-      "use": ["HXVIP"],
-      "filter": "(?i)日|jp|japan",
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "3m"
+      "filter": "(?i)日|jp|japan"
     },
     {
       "tag": "SG_AUTO",
       "type": "urltest",
-      "use": ["HXVIP"],
-      "filter": "(?i)新|sg|singapore",
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "3m"
+      "filter": "(?i)新|sg|singapore"
     },
     {
       "tag": "US_AUTO",
       "type": "urltest",
-      "use": ["HXVIP"],
-      "filter": "(?i)美|us|united",
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "3m"
+      "filter": "(?i)美|us|united"
     },
     {
       "tag": "PROXY",
       "type": "selector",
-      "outbounds": [
-        "HK_AUTO",
-        "JP_AUTO",
-        "SG_AUTO",
-        "US_AUTO"
-      ]
-    },
-    {
-      "tag": "GLOBAL_AUTO",
-      "type": "urltest",
       "outbounds": [
         "HK_AUTO",
         "JP_AUTO",
@@ -159,13 +120,5 @@
         "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/netflix.srs"
       }
     ]
-  },
-
-  "inbounds": [
-    {
-      "type": "mixed",
-      "listen": "::",
-      "listen_port": 7890
-    }
-  ]
+  }
 }
