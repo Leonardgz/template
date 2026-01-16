@@ -67,6 +67,20 @@
       "type": "direct"
     }
   ],
+{
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "singbox0",
+      "inet4_address": "172.19.0.1/30",
+      "stack": "system",
+      "auto_route": true,
+      "strict_route": false,
+      "sniff": true
+    }
+  ]
+}
 
   "route": {
     "rules": [
@@ -122,3 +136,4 @@
     ]
   }
 }
+
